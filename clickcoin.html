@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Battle - Kumpul Coin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4169e1;
+            box-shadow: 0 5px 20px rgba(65, 105, 225, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .username {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4169e1;
+            text-shadow: 0 0 10px rgba(65, 105, 225, 0.8);
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .coin-display {
+            font-size: 1.3em;
+            background: rgba(65, 105, 225, 0.3);
+            padding: 10px 25px;
+            border-radius: 25px;
+            border: 2px solid #4169e1;
+        }
+
+        .logout-btn {
+            background: rgba(255, 0, 0, 0.6);
+            border: 2px solid #ff0000;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .coin-section {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #4169e1;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(65, 105, 225, 0.4);
+        }
+
+        .coin-section h2 {
+            color: #4169e1;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .coin-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: 5px solid #ff8c00;
+            font-size: 6em;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .coin-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.7);
+        }
+
+        .coin-button:active {
+            transform: scale(0.95);
+        }
+
+        .coin-button.clicked {
+            animation: coinClick 0.3s ease;
+        }
+
+        @keyframes coinClick {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.9) rotate(15deg); }
+        }
+
+        .click-counter {
+            font-size: 1.2em;
+            margin-top: 15px;
+            color: #ffd700;
+        }
+
+        .side-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .redeem-section, .navigation-section {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #4169e1;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(65, 105, 225, 0.4);
+        }
+
+        .redeem-section h3, .navigation-section h3 {
+            color: #4169e1;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4169e1;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #6495ed;
+            box-shadow: 0 0 10px rgba(65, 105, 225, 0.5);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(65, 105, 225, 0.6);
+        }
+
+        .btn-large {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff6b6b;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #51cf66;
+        }
+
+        .floating-coin {
+            position: fixed;
+            pointer-events: none;
+            font-size: 2em;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 1000;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-info {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="user-info">
+            <div>
+                <span class="username" id="usernameDisplay">Loading...</span>
+                <span class="admin-badge" id="adminBadge" style="display: none;">👑 ADMIN</span>
+            </div>
+            <div class="coin-display">
+                🪙 <span id="totalCoins">0</span> Coins
+            </div>
+            <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="coin-section">
+            <h2>🎯 KLIK UNTUK COIN!</h2>
+            <p style="color: #ccc; margin-bottom: 20px;">3 klik = 1 coin</p>
+            
+            <div class="coin-button" id="coinButton">
+                🪙
+            </div>
+            
+            <div class="click-counter">
+                Klik: <span id="clickCount">0</span> / 3
+            </div>
+            
+            <div class="message" id="coinMessage"></div>
+        </div>
+
+        <div class="side-section">
+            <div class="redeem-section">
+                <h3>🎁 REDEEM CODE</h3>
+                <p style="color: #ccc; font-size: 0.9em;">Masukkan code untuk dapat hadiah!</p>
+                
+                <div class="input-group">
+                    <input type="text" id="redeemInput" placeholder="Masukkan code..." maxlength="20">
+                    <button class="btn" id="redeemBtn">Redeem</button>
+                </div>
+                
+                <div class="message" id="redeemMessage"></div>
+            </div>
+
+            <div class="navigation-section">
+                <h3>🎮 NAVIGASI</h3>
+                
+                <button class="btn btn-large" id="shopBtn">
+                    🛒 KEDAI EMOJI
+                </button>
+                
+                <button class="btn btn-large" id="arenaBtn">
+                    ⚔️ ARENA PERTARUNGAN
+                </button>
+                
+                <button class="btn btn-large" id="adminBtn" style="display: none; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000;">
+                    👑 ADMIN PANEL
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get, update, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2hhJVmkbwfrVbm_XHJTeQPjmBXvjATz8",
+            authDomain: "emojibattle-89193.firebaseapp.com",
+            databaseURL: "https://emojibattle-89193-default-rtdb.firebaseio.com",
+            projectId: "emojibattle-89193",
+            storageBucket: "emojibattle-89193.firebasestorage.app",
+            messagingSenderId: "497611186456",
+            appId: "1:497611186456:web:4b0d2b9abb11674dad7e6d",
+            measurementId: "G-573Q1XDCTD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const currentUser = localStorage.getItem('currentUser');
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        const usernameDisplay = document.getElementById('usernameDisplay');
+        const adminBadge = document.getElementById('adminBadge');
+        const totalCoinsDisplay = document.getElementById('totalCoins');
+        const clickCountDisplay = document.getElementById('clickCount');
+        const coinButton = document.getElementById('coinButton');
+        const coinMessage = document.getElementById('coinMessage');
+        const redeemInput = document.getElementById('redeemInput');
+        const redeemBtn = document.getElementById('redeemBtn');
+        const redeemMessage = document.getElementById('redeemMessage');
+        const shopBtn = document.getElementById('shopBtn');
+        const arenaBtn = document.getElementById('arenaBtn');
+        const adminBtn = document.getElementById('adminBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        let userData = {};
+        let clickCount = 0;
+
+        usernameDisplay.textContent = currentUser;
+        
+        if (isAdmin) {
+            adminBadge.style.display = 'inline-block';
+            adminBtn.style.display = 'block';
+        }
+
+        const userRef = ref(db, 'users/' + currentUser);
+        
+        onValue(userRef, (snapshot) => {
+            if (snapshot.exists()) {
+                userData = snapshot.val();
+                totalCoinsDisplay.textContent = userData.coins || 0;
+                clickCount = userData.clicks || 0;
+                clickCountDisplay.textContent = clickCount % 3;
+            }
+        });
+
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+
+        function createFloatingCoin(x, y) {
+            const coin = document.createElement('div');
+            coin.className = 'floating-coin';
+            coin.textContent = '🪙';
+            coin.style.left = x + 'px';
+            coin.style.top = y + 'px';
+            document.body.appendChild(coin);
+            
+            setTimeout(() => {
+                coin.remove();
+            }, 1000);
+        }
+
+        coinButton.addEventListener('click', async (e) => {
+            clickCount++;
+            clickCountDisplay.textContent = clickCount % 3;
+            
+            coinButton.classList.add('clicked');
+            setTimeout(() => coinButton.classList.remove('clicked'), 300);
+            
+            createFloatingCoin(e.clientX, e.clientY);
+            
+            if (clickCount % 3 === 0) {
+                const newCoins = (userData.coins || 0) + 1;
+                
+                await update(userRef, {
+                    coins: newCoins,
+                    clicks: clickCount
+                });
+                
+                showMessage(coinMessage, '🎉 +1 Coin diperoleh!', 'success');
+            } else {
+                await update(userRef, {
+                    clicks: clickCount
+                });
+            }
+        });
+
+        redeemBtn.addEventListener('click', async () => {
+            const code = redeemInput.value.trim().toUpperCase();
+            
+            if (!code) {
+                showMessage(redeemMessage, 'Masukkan code dahulu!', 'error');
+                return;
+            }
+            
+            try {
+                const codeRef = ref(db, 'redeemCodes/' + code);
+                const snapshot = await get(codeRef);
+                
+                if (!snapshot.exists()) {
+                    showMessage(redeemMessage, 'Code tidak sah!', 'error');
+                    return;
+                }
+                
+                const codeData = snapshot.val();
+                
+                if (codeData.used && codeData.used.includes(currentUser)) {
+                    showMessage(redeemMessage, 'Code sudah digunakan!', 'error');
+                    return;
+                }
+                
+                if (codeData.maxUses && codeData.used && codeData.used.length >= codeData.maxUses) {
+                    showMessage(redeemMessage, 'Code sudah mencapai had penggunaan!', 'error');
+                    return;
+                }
+                
+                const newCoins = (userData.coins || 0) + (codeData.reward || 10);
+                const usedBy = codeData.used || [];
+                usedBy.push(currentUser);
+                
+                await update(userRef, {
+                    coins: newCoins
+                });
+                
+                await update(codeRef, {
+                    used: usedBy
+                });
+                
+                showMessage(redeemMessage, `🎁 +${codeData.reward || 10} Coins diperoleh!`, 'success');
+                redeemInput.value = '';
+                
+            } catch (error) {
+                showMessage(redeemMessage, 'Ralat: ' + error.message, 'error');
+            }
+        });
+
+        shopBtn.addEventListener('click', () => {
+            window.location.href = 'shop.html';
+        });
+
+        arenaBtn.addEventListener('click', () => {
+            window.location.href = 'arena.html';
+        });
+
+        adminBtn.addEventListener('click', () => {
+            window.location.href = 'admin.html';
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            await update(userRef, {
+                online: false
+            });
+            
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isAdmin');
+            window.location.href = 'index.html';
+        });
+
+        window.addEventListener('beforeunload', async () => {
+            await update(userRef, {
+                online: false
+            });
+        });
+    </script>
+</body>
+</html>
