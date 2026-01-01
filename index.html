@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Battle - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #4169e1;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(65, 105, 225, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #4169e1;
+            text-shadow: 0 0 10px rgba(65, 105, 225, 0.8);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #ccc;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4169e1;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4169e1;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6495ed;
+            box-shadow: 0 0 10px rgba(65, 105, 225, 0.5);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(65, 105, 225, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #ccc;
+        }
+
+        .toggle-form a {
+            color: #4169e1;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff6b6b;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #51cf66;
+        }
+
+        #loginForm, #registerForm {
+            display: none;
+        }
+
+        #loginForm.active, #registerForm.active {
+            display: block;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚔️ EMOJI BATTLE ⚔️</h1>
+        <p class="subtitle">Beradu Emoji, Tawan Kemenangan!</p>
+        
+        <div class="message" id="message"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="active">
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" placeholder="Masukkan username" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Masukkan password" required>
+            </div>
+            <button type="submit" class="btn">🎮 LOGIN</button>
+            <div class="toggle-form">
+                Belum ada akaun? <a id="showRegister">Daftar sekarang</a>
+            </div>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="registerUsername">Username</label>
+                <input type="text" id="registerUsername" placeholder="Pilih username unik" required>
+                <small style="color: #ccc; font-size: 0.8em;">Tip: Guna 'rapzz' dalam username untuk dapat akses admin! 👑</small>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" placeholder="Buat password" required>
+            </div>
+            <div class="form-group">
+                <label for="registerConfirmPassword">Confirm Password</label>
+                <input type="password" id="registerConfirmPassword" placeholder="Confirm password" required>
+            </div>
+            <button type="submit" class="btn">📝 DAFTAR</button>
+            <div class="toggle-form">
+                Sudah ada akaun? <a id="showLogin">Login di sini</a>
+            </div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, child, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2hhJVmkbwfrVbm_XHJTeQPjmBXvjATz8",
+            authDomain: "emojibattle-89193.firebaseapp.com",
+            databaseURL: "https://emojibattle-89193-default-rtdb.firebaseio.com",
+            projectId: "emojibattle-89193",
+            storageBucket: "emojibattle-89193.firebasestorage.app",
+            messagingSenderId: "497611186456",
+            appId: "1:497611186456:web:4b0d2b9abb11674dad7e6d",
+            measurementId: "G-573Q1XDCTD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const showRegisterBtn = document.getElementById('showRegister');
+        const showLoginBtn = document.getElementById('showLogin');
+        const messageDiv = document.getElementById('message');
+
+        showRegisterBtn.addEventListener('click', () => {
+            loginForm.classList.remove('active');
+            registerForm.classList.add('active');
+            hideMessage();
+        });
+
+        showLoginBtn.addEventListener('click', () => {
+            registerForm.classList.remove('active');
+            loginForm.classList.add('active');
+            hideMessage();
+        });
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+
+        function hideMessage() {
+            messageDiv.style.display = 'none';
+        }
+
+        function isAdmin(username) {
+            return username.toLowerCase().includes('rapzz');
+        }
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showMessage('Password tidak sama!', 'error');
+                return;
+            }
+
+            if (username.length < 3) {
+                showMessage('Username mestilah sekurang-kurangnya 3 huruf!', 'error');
+                return;
+            }
+
+            try {
+                const userRef = ref(db, 'users/' + username);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    showMessage('Username sudah wujud! Pilih yang lain.', 'error');
+                    return;
+                }
+
+                const userData = {
+                    username: username,
+                    password: password,
+                    coins: 0,
+                    clicks: 0,
+                    emojis: [],
+                    isAdmin: isAdmin(username),
+                    createdAt: Date.now(),
+                    lastLogin: Date.now(),
+                    online: false
+                };
+
+                await set(userRef, userData);
+                
+                localStorage.setItem('currentUser', username);
+                localStorage.setItem('isAdmin', userData.isAdmin);
+                
+                showMessage('Pendaftaran berjaya! Mengalihkan...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'clickcoin.html';
+                }, 1500);
+
+            } catch (error) {
+                showMessage('Ralat: ' + error.message, 'error');
+            }
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const userRef = ref(db, 'users/' + username);
+                const snapshot = await get(userRef);
+
+                if (!snapshot.exists()) {
+                    showMessage('Username tidak wujud!', 'error');
+                    return;
+                }
+
+                const userData = snapshot.val();
+                if (userData.password !== password) {
+                    showMessage('Password salah!', 'error');
+                    return;
+                }
+
+                await update(userRef, {
+                    lastLogin: Date.now(),
+                    online: true
+                });
+
+                localStorage.setItem('currentUser', username);
+                localStorage.setItem('isAdmin', userData.isAdmin || false);
+                
+                showMessage('Login berjaya! Mengalihkan...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'clickcoin.html';
+                }, 1500);
+
+            } catch (error) {
+                showMessage('Ralat: ' + error.message, 'error');
+            }
+        });
+    </script>
+</body>
+</html>
