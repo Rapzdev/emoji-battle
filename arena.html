@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Battle - Arena</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-bottom: 2px solid #4169e1;
+            box-shadow: 0 5px 20px rgba(65, 105, 225, 0.3);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .arena-title {
+            font-size: 2em;
+            color: #4169e1;
+            text-shadow: 0 0 10px rgba(65, 105, 225, 0.8);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(65, 105, 225, 0.6);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .game-section {
+            display: none;
+        }
+
+        .game-section.active {
+            display: block;
+        }
+
+        /* Lobby Section */
+        .lobby-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #4169e1;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .section-card h2 {
+            color: #4169e1;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #4169e1;
+            padding-bottom: 10px;
+        }
+
+        .players-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .player-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #4169e1;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .player-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #6495ed;
+            transform: translateX(5px);
+        }
+
+        .player-info-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .online-badge {
+            background: #00ff00;
+            color: #000;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .invite-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .invite-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.5);
+        }
+
+        .invite-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        /* Selection Section */
+        .selection-section {
+            text-align: center;
+        }
+
+        .selection-section h2 {
+            color: #4169e1;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .emoji-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .emoji-select-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 3px solid #4169e1;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .emoji-select-card:hover {
+            transform: translateY(-5px);
+            border-color: #6495ed;
+            box-shadow: 0 10px 25px rgba(65, 105, 225, 0.5);
+        }
+
+        .emoji-select-card.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .emoji-icon-large {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .emoji-role-badge {
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .selected-display {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .selected-display h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .selected-emojis {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .selected-emoji {
+            font-size: 4em;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+        }
+
+        .confirm-btn {
+            padding: 15px 50px;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: bold;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .confirm-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.5);
+        }
+
+        .confirm-btn:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        /* Battle Section */
+        .battle-arena {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #4169e1;
+            border-radius: 15px;
+            padding: 40px;
+        }
+
+        .battle-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .vs-display {
+            font-size: 2.5em;
+            color: #4169e1;
+            margin: 20px 0;
+            text-shadow: 0 0 15px rgba(65, 105, 225, 0.8);
+        }
+
+        .battle-field {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+            margin: 40px 0;
+        }
+
+        .player-side {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #4169e1;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .player-side.you {
+            border-color: #00ff00;
+        }
+
+        .player-side.opponent {
+            border-color: #ff6b6b;
+        }
+
+        .player-name-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .emoji-battle-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #4169e1;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .emoji-battle-card.dead {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
+        .emoji-battle-card.active {
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .emoji-battle-icon {
+            font-size: 3em;
+        }
+
+        .emoji-battle-stats {
+            flex: 1;
+        }
+
+        .hp-bar {
+            background: #333;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .hp-fill {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a6f);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .hp-fill.high {
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+        }
+
+        .hp-fill.medium {
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+        }
+
+        .rps-choices {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .rps-btn {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #4169e1;
+            background: rgba(65, 105, 225, 0.3);
+            font-size: 3em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .rps-btn:hover {
+            transform: scale(1.1);
+            border-color: #6495ed;
+            box-shadow: 0 10px 30px rgba(65, 105, 225, 0.6);
+        }
+
+        .rps-btn.selected {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .action-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .action-section h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .battle-log {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #4169e1;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .log-entry.win {
+            color: #00ff00;
+        }
+
+        .log-entry.lose {
+            color: #ff6b6b;
+        }
+
+        .log-entry.info {
+            color: #4169e1;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f0c29, #302b63);
+            border: 3px solid #4169e1;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            animation: modalPop 0.3s ease;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: #4169e1;
+            margin-bottom: 20px;
+        }
+
+        .modal-text {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.accept {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+        }
+
+        .modal-btn.decline {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: #fff;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .waiting-indicator {
+            text-align: center;
+            padding: 40px;
+            color: #4169e1;
+            font-size: 1.3em;
+        }
+
+        .spinner {
+            border: 4px solid rgba(65, 105, 225, 0.3);
+            border-top: 4px solid #4169e1;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .lobby-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .battle-field {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1 class="arena-title">⚔️ ARENA PERTEMPURAN</h1>
+            <button class="back-btn" id="backBtn">⬅️ Kembali</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Lobby Section -->
+        <div class="game-section active" id="lobbySection">
+            <div class="lobby-section">
+                <div class="section-card">
+                    <h2>👥 PEMAIN TERSEDIA</h2>
+                    <div class="players-list" id="availablePlayers"></div>
+                </div>
+                
+                <div class="section-card">
+                    <h2>📨 JEMPUTAN</h2>
+                    <div id="invitationsArea">
+                        <p style="text-align: center; color: #ccc; padding: 40px;">Tiada jemputan pada masa ini.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selection Section -->
+        <div class="game-section" id="selectionSection">
+            <div class="selection-section">
+                <h2>🎯 PILIH 3 EMOJI UNTUK BERTARUNG</h2>
+                <p style="color: #ccc; margin-bottom: 20px;">Tip: Pilih role yang berbeza untuk strategi terbaik!</p>
+                
+                <div class="selected-display">
+                    <h3>✨ EMOJI TERPILIH (<span id="selectedCount">0</span>/3)</h3>
+                    <div class="selected-emojis" id="selectedEmojis">
+                        <div style="color: #ccc;">Belum ada emoji dipilih...</div>
+                    </div>
+                </div>
+
+                <div class="emoji-selection" id="emojiSelection"></div>
+
+                <button class="confirm-btn" id="confirmSelectionBtn" disabled>🚀 MULA PERTEMPURAN!</button>
+            </div>
+        </div>
+
+        <!-- Battle Section -->
+        <div class="game-section" id="battleSection">
+            <div class="battle-arena">
+                <div class="battle-header">
+                    <h2 class="vs-display"><span id="player1Name">Player 1</span> ⚔️ VS ⚔️ <span id="player2Name">Player 2</span></h2>
+                    <div id="turnIndicator" style="color: #ffd700; font-size: 1.3em; margin-top: 15px;"></div>
+                </div>
+
+                <div class="battle-field">
+                    <div class="player-side you">
+                        <div class="player-name-display">👤 ANDA</div>
+                        <div id="yourEmojis"></div>
+                    </div>
+
+                    <div style="text-align: center; font-size: 3em;">⚡</div>
+
+                    <div class="player-side opponent">
+                        <div class="player-name-display">🎯 LAWAN</div>
+                        <div id="opponentEmojis"></div>
+                    </div>
+                </div>
+
+                <div class="action-section" id="actionSection"></div>
+
+                <div class="battle-log" id="battleLog"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Modal -->
+    <div class="modal" id="inviteModal">
+        <div class="modal-content">
+            <h2 class="modal-title">⚔️ JEMPUTAN PERTEMPURAN!</h2>
+            <p class="modal-text" id="inviteText"></p>
+            <div class="modal-buttons">
+                <button class="modal-btn accept" id="acceptInviteBtn">✅ Terima</button>
+                <button class="modal-btn decline" id="declineInviteBtn">❌ Tolak</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Waiting Modal -->
+    <div class="modal" id="waitingModal">
+        <div class="modal-content">
+            <h2 class="modal-title">⏳ Menunggu...</h2>
+            <div class="spinner"></div>
+            <p class="modal-text" id="waitingText">Menunggu lawan menerima jemputan...</p>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="resultTitle"></h2>
+            <p class="modal-text" id="resultText"></p>
+            <button class="modal-btn accept" id="backToLobbyBtn">🏠 Kembali ke Lobby</button>
+        </div>
+    </div>
+
+    <script type="module" src="logic.js"></script>
+</body>
+</html>
