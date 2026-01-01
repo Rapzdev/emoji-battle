@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Battle - Kedai</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-bottom: 2px solid #4169e1;
+            box-shadow: 0 5px 20px rgba(65, 105, 225, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .shop-title {
+            font-size: 2em;
+            color: #4169e1;
+            text-shadow: 0 0 10px rgba(65, 105, 225, 0.8);
+        }
+
+        .coin-display {
+            font-size: 1.5em;
+            background: rgba(65, 105, 225, 0.3);
+            padding: 10px 25px;
+            border-radius: 25px;
+            border: 2px solid #4169e1;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(65, 105, 225, 0.6);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .filter-section {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #4169e1;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: rgba(65, 105, 225, 0.3);
+            border: 2px solid #4169e1;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            transform: translateY(-2px);
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .emoji-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #4169e1;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .emoji-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(65, 105, 225, 0.5);
+            border-color: #6495ed;
+        }
+
+        .emoji-card.owned {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .emoji-icon {
+            font-size: 5em;
+            margin: 15px 0;
+            display: block;
+        }
+
+        .emoji-role {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .role-lifesteal {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        }
+
+        .role-tank {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+
+        .role-mage {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: #333;
+        }
+
+        .role-assassin {
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+        }
+
+        .role-support {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .stats {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(65, 105, 225, 0.3);
+        }
+
+        .stat-label {
+            color: #4169e1;
+            font-weight: bold;
+        }
+
+        .price {
+            font-size: 1.3em;
+            color: #ffd700;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .buy-btn:hover {
+            background: linear-gradient(135deg, #6495ed, #4169e1);
+            transform: scale(1.05);
+        }
+
+        .buy-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .owned-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #00ff00;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .message {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.9);
+            color: #000;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.9);
+            color: #fff;
+        }
+
+        .inventory-btn {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .inventory-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .emoji-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .header-content {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1 class="shop-title">🛒 KEDAI EMOJI</h1>
+            <div class="coin-display">
+                🪙 <span id="coinBalance">0</span> Coins
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="inventory-btn" id="inventoryBtn">📦 Inventory (<span id="inventoryCount">0</span>)</button>
+                <button class="back-btn" id="backBtn">⬅️ Kembali</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="filter-section">
+            <span style="font-weight: bold; color: #4169e1;">Filter:</span>
+            <button class="filter-btn active" data-filter="all">Semua</button>
+            <button class="filter-btn" data-filter="lifesteal">Lifesteal</button>
+            <button class="filter-btn" data-filter="tank">Tank</button>
+            <button class="filter-btn" data-filter="mage">Mage</button>
+            <button class="filter-btn" data-filter="assassin">Assassin</button>
+            <button class="filter-btn" data-filter="support">Support</button>
+        </div>
+
+        <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+
+    <div class="message" id="messageBox"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2hhJVmkbwfrVbm_XHJTeQPjmBXvjATz8",
+            authDomain: "emojibattle-89193.firebaseapp.com",
+            databaseURL: "https://emojibattle-89193-default-rtdb.firebaseio.com",
+            projectId: "emojibattle-89193",
+            storageBucket: "emojibattle-89193.firebasestorage.app",
+            messagingSenderId: "497611186456",
+            appId: "1:497611186456:web:4b0d2b9abb11674dad7e6d",
+            measurementId: "G-573Q1XDCTD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        const emojiShop = [
+            { emoji: '😊', role: 'lifesteal', hp: 5, price: 10, damage: 2 },
+            { emoji: '😂', role: 'tank', hp: 8, price: 10, damage: 1 },
+            { emoji: '🤣', role: 'mage', hp: 3, price: 10, damage: 3 },
+            { emoji: '😒', role: 'lifesteal', hp: 6, price: 16, damage: 3 },
+            { emoji: '😍', role: 'tank', hp: 9, price: 16, damage: 2 },
+            { emoji: '😁', role: 'mage', hp: 4, price: 16, damage: 4 },
+            { emoji: '😎', role: 'assassin', hp: 4, price: 20, damage: 5 },
+            { emoji: '🤩', role: 'mage', hp: 5, price: 20, damage: 4 },
+            { emoji: '😇', role: 'support', hp: 6, price: 20, damage: 2 },
+            { emoji: '🥳', role: 'assassin', hp: 5, price: 25, damage: 5 },
+            { emoji: '😈', role: 'assassin', hp: 6, price: 30, damage: 6 },
+            { emoji: '👹', role: 'tank', hp: 10, price: 30, damage: 3 },
+            { emoji: '👻', role: 'mage', hp: 4, price: 25, damage: 5 },
+            { emoji: '💀', role: 'assassin', hp: 5, price: 35, damage: 7 },
+            { emoji: '👽', role: 'mage', hp: 5, price: 28, damage: 5 },
+            { emoji: '🤖', role: 'tank', hp: 11, price: 35, damage: 3 },
+            { emoji: '😺', role: 'assassin', hp: 4, price: 22, damage: 5 },
+            { emoji: '🐯', role: 'tank', hp: 9, price: 30, damage: 4 },
+            { emoji: '🦁', role: 'tank', hp: 10, price: 32, damage: 4 },
+            { emoji: '🐉', role: 'mage', hp: 6, price: 40, damage: 6 },
+            { emoji: '⚡', role: 'mage', hp: 4, price: 35, damage: 6 },
+            { emoji: '🔥', role: 'mage', hp: 5, price: 30, damage: 5 },
+            { emoji: '💎', role: 'support', hp: 7, price: 35, damage: 3 },
+            { emoji: '🌟', role: 'support', hp: 6, price: 28, damage: 3 }
+        ];
+
+        let userData = {};
+        let currentFilter = 'all';
+
+        const coinBalanceDisplay = document.getElementById('coinBalance');
+        const inventoryCountDisplay = document.getElementById('inventoryCount');
+        const emojiGrid = document.getElementById('emojiGrid');
+        const messageBox = document.getElementById('messageBox');
+        const backBtn = document.getElementById('backBtn');
+        const inventoryBtn = document.getElementById('inventoryBtn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        async function loadUserData() {
+            const userRef = ref(db, 'users/' + currentUser);
+            const snapshot = await get(userRef);
+            if (snapshot.exists()) {
+                userData = snapshot.val();
+                coinBalanceDisplay.textContent = userData.coins || 0;
+                inventoryCountDisplay.textContent = (userData.emojis || []).length;
+                renderEmojis();
+            }
+        }
+
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = `message ${type}`;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 3000);
+        }
+
+        function renderEmojis() {
+            emojiGrid.innerHTML = '';
+            
+            const filtered = currentFilter === 'all' 
+                ? emojiShop 
+                : emojiShop.filter(e => e.role === currentFilter);
+
+            filtered.forEach((emoji, index) => {
+                const owned = (userData.emojis || []).some(e => e.emoji === emoji.emoji);
+                
+                const card = document.createElement('div');
+                card.className = `emoji-card ${owned ? 'owned' : ''}`;
+                
+                card.innerHTML = `
+                    ${owned ? '<div class="owned-badge">✓ DIMILIKI</div>' : ''}
+                    <span class="emoji-icon">${emoji.emoji}</span>
+                    <div class="emoji-role role-${emoji.role}">${emoji.role.toUpperCase()}</div>
+                    <div class="stats">
+                        <div class="stat-row">
+                            <span class="stat-label">❤️ HP:</span>
+                            <span>${emoji.hp}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">⚔️ Damage:</span>
+                            <span>${emoji.damage}</span>
+                        </div>
+                    </div>
+                    <div class="price">🪙 ${emoji.price} Coins</div>
+                    <button class="buy-btn" ${owned ? 'disabled' : ''} data-index="${index}">
+                        ${owned ? '✓ Sudah Dibeli' : '🛒 Beli Sekarang'}
+                    </button>
+                `;
+                
+                emojiGrid.appendChild(card);
+            });
+
+            document.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.addEventListener('click', buyEmoji);
+            });
+        }
+
+        async function buyEmoji(e) {
+            const index = parseInt(e.target.dataset.index);
+            const filtered = currentFilter === 'all' 
+                ? emojiShop 
+                : emojiShop.filter(e => e.role === currentFilter);
+            const emoji = filtered[index];
+            
+            if ((userData.coins || 0) < emoji.price) {
+                showMessage('❌ Coin tidak mencukupi!', 'error');
+                return;
+            }
+
+            const owned = (userData.emojis || []).some(e => e.emoji === emoji.emoji);
+            if (owned) {
+                showMessage('❌ Emoji sudah dimiliki!', 'error');
+                return;
+            }
+
+            const newCoins = userData.coins - emoji.price;
+            const newEmojis = [...(userData.emojis || []), {
+                emoji: emoji.emoji,
+                role: emoji.role,
+                hp: emoji.hp,
+                maxHp: emoji.hp,
+                damage: emoji.damage,
+                purchasedAt: Date.now()
+            }];
+
+            const userRef = ref(db, 'users/' + currentUser);
+            await update(userRef, {
+                coins: newCoins,
+                emojis: newEmojis
+            });
+
+            userData.coins = newCoins;
+            userData.emojis = newEmojis;
+
+            coinBalanceDisplay.textContent = newCoins;
+            inventoryCountDisplay.textContent = newEmojis.length;
+
+            showMessage(`✅ ${emoji.emoji} berjaya dibeli!`, 'success');
+            renderEmojis();
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderEmojis();
+            });
+        });
+
+        backBtn.addEventListener('click', () => {
+            window.location.href = 'clickcoin.html';
+        });
+
+        inventoryBtn.addEventListener('click', () => {
+            if ((userData.emojis || []).length === 0) {
+                showMessage('📦 Inventory kosong! Beli emoji dahulu.', 'error');
+            } else {
+                showMessage(`📦 Anda mempunyai ${userData.emojis.length} emoji!`, 'success');
+            }
+        });
+
+        loadUserData();
+    </script>
+</body>
+</html>
