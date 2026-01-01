@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Battle - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            margin-top: 10px;
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 25px;
+            background: rgba(65, 105, 225, 0.3);
+            border: 2px solid #4169e1;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(65, 105, 225, 0.5);
+        }
+
+        .back-btn {
+            background: rgba(255, 0, 0, 0.3);
+            border-color: #ff0000;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 0, 0, 0.6);
+        }
+
+        .section {
+            display: none;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 2em;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(65, 105, 225, 0.3), rgba(100, 149, 237, 0.2));
+            border: 2px solid #4169e1;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(65, 105, 225, 0.4);
+        }
+
+        .stat-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #ccc;
+        }
+
+        .players-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #4169e1;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .player-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #6495ed;
+        }
+
+        .player-card.online {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4169e1;
+            margin-bottom: 5px;
+        }
+
+        .player-stats {
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-online {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .status-offline {
+            background: #555;
+            color: #fff;
+        }
+
+        .status-battle {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(65, 105, 225, 0.5);
+        }
+
+        .code-creator {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4169e1;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6495ed;
+            box-shadow: 0 0 10px rgba(65, 105, 225, 0.5);
+        }
+
+        .create-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .codes-list {
+            margin-top: 30px;
+        }
+
+        .code-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #4169e1;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .code-display {
+            font-size: 1.5em;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        .code-info {
+            color: #ccc;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            color: #51cf66;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            color: #ff6b6b;
+        }
+
+        .emoji-display {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .emoji-badge {
+            font-size: 1.5em;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f0c29, #302b63);
+            border: 2px solid #4169e1;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 1.8em;
+        }
+
+        .close-btn {
+            background: #ff0000;
+            border: none;
+            color: #fff;
+            font-size: 1.5em;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>👑 ADMIN PANEL 👑</h1>
+        <p>Selamat datang, Admin <span id="adminName"></span>!</p>
+    </div>
+
+    <div class="container">
+        <div class="nav-buttons">
+            <button class="nav-btn active" data-section="overview">📊 Overview</button>
+            <button class="nav-btn" data-section="players">👥 Pemain</button>
+            <button class="nav-btn" data-section="battles">⚔️ Pertempuran</button>
+            <button class="nav-btn" data-section="codes">🎁 Redeem Codes</button>
+            <button class="nav-btn back-btn" id="backBtn">⬅️ Kembali</button>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="section active" id="overview">
+            <h2>📊 STATISTIK KESELURUHAN</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">👥 Jumlah Pemain</div>
+                    <div class="stat-value" id="totalPlayers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">🟢 Pemain Online</div>
+                    <div class="stat-value" id="onlinePlayers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">⚔️ Dalam Pertempuran</div>
+                    <div class="stat-value" id="battlePlayers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">🎁 Redeem Codes</div>
+                    <div class="stat-value" id="totalCodes">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Section -->
+        <div class="section" id="players">
+            <h2>👥 SENARAI PEMAIN</h2>
+            <div class="players-list" id="playersList"></div>
+        </div>
+
+        <!-- Battles Section -->
+        <div class="section" id="battles">
+            <h2>⚔️ PERTEMPURAN AKTIF</h2>
+            <div class="players-list" id="battlesList"></div>
+        </div>
+
+        <!-- Codes Section -->
+        <div class="section" id="codes">
+            <h2>🎁 CIPTA REDEEM CODE</h2>
+            
+            <div class="message" id="codeMessage"></div>
+            
+            <div class="code-creator">
+                <div class="form-group">
+                    <label for="codeInput">Code (huruf besar sahaja):</label>
+                    <input type="text" id="codeInput" placeholder="Contoh: RAPZZ2025" maxlength="20" style="text-transform: uppercase;">
+                </div>
+                <div class="form-group">
+                    <label for="rewardInput">Hadiah (Coins):</label>
+                    <input type="number" id="rewardInput" placeholder="Contoh: 100" min="1" max="10000">
+                </div>
+                <div class="form-group">
+                    <label for="maxUsesInput">Had Penggunaan (0 = Tanpa Had):</label>
+                    <input type="number" id="maxUsesInput" placeholder="Contoh: 10" min="0" max="1000" value="0">
+                </div>
+                <button class="create-btn" id="createCodeBtn">✨ Cipta Code</button>
+            </div>
+
+            <div class="codes-list" id="codesList">
+                <h3 style="color: #ffd700; margin-bottom: 15px;">📋 Code Yang Telah Dicipta</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Detail Modal -->
+    <div class="modal" id="playerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalPlayerName"></h3>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get, set, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2hhJVmkbwfrVbm_XHJTeQPjmBXvjATz8",
+            authDomain: "emojibattle-89193.firebaseapp.com",
+            databaseURL: "https://emojibattle-89193-default-rtdb.firebaseio.com",
+            projectId: "emojibattle-89193",
+            storageBucket: "emojibattle-89193.firebasestorage.app",
+            messagingSenderId: "497611186456",
+            appId: "1:497611186456:web:4b0d2b9abb11674dad7e6d",
+            measurementId: "G-573Q1XDCTD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const currentUser = localStorage.getItem('currentUser');
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+        if (!currentUser || !isAdmin) {
+            alert('⛔ Akses ditolak! Hanya admin sahaja.');
+            window.location.href = 'clickcoin.html';
+        }
+
+        document.getElementById('adminName').textContent = currentUser;
+
+        const sections = document.querySelectorAll('.section');
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const backBtn = document.getElementById('backBtn');
+        const playerModal = document.getElementById('playerModal');
+        const closeModal = document.getElementById('closeModal');
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.id === 'backBtn') return;
+                
+                navBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                sections.forEach(s => s.classList.remove('active'));
+                document.getElementById(btn.dataset.section).classList.add('active');
+            });
+        });
+
+        backBtn.addEventListener('click', () => {
+            window.location.href = 'clickcoin.html';
+        });
+
+        closeModal.addEventListener('click', () => {
+            playerModal.classList.remove('active');
+        });
+
+        let allPlayers = {};
+        let allBattles = {};
+        let allCodes = {};
+
+        const usersRef = ref(db, 'users');
+        onValue(usersRef, (snapshot) => {
+            if (snapshot.exists()) {
+                allPlayers = snapshot.val();
+                updateOverview();
+                renderPlayers();
+            }
+        });
+
+        const battlesRef = ref(db, 'battles');
+        onValue(battlesRef, (snapshot) => {
+            if (snapshot.exists()) {
+                allBattles = snapshot.val();
+                updateOverview();
+                renderBattles();
+            } else {
+                allBattles = {};
+                updateOverview();
+                renderBattles();
+            }
+        });
+
+        const codesRef = ref(db, 'redeemCodes');
+        onValue(codesRef, (snapshot) => {
+            if (snapshot.exists()) {
+                allCodes = snapshot.val();
+                updateOverview();
+                renderCodes();
+            } else {
+                allCodes = {};
+                updateOverview();
+                renderCodes();
+            }
+        });
+
+        function updateOverview() {
+            const players = Object.values(allPlayers);
+            document.getElementById('totalPlayers').textContent = players.length;
+            document.getElementById('onlinePlayers').textContent = players.filter(p => p.online).length;
+            
+            const battles = Object.values(allBattles);
+            const activeBattles = battles.filter(b => b.status === 'active');
+            document.getElementById('battlePlayers').textContent = activeBattles.length;
+            
+            document.getElementById('totalCodes').textContent = Object.keys(allCodes).length;
+        }
+
+        function renderPlayers() {
+            const playersList = document.getElementById('playersList');
+            playersList.innerHTML = '';
+
+            const players = Object.entries(allPlayers).sort((a, b) => {
+                if (a[1].online !== b[1].online) return b[1].online ? 1 : -1;
+                return (b[1].coins || 0) - (a[1].coins || 0);
+            });
+
+            players.forEach(([username, data]) => {
+                const card = document.createElement('div');
+                card.className = `player-card ${data.online ? 'online' : ''}`;
+                
+                const emojisHtml = (data.emojis || []).slice(0, 5).map(e => 
+                    `<span class="emoji-badge" title="${e.role}">${e.emoji}</span>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="player-info">
+                        <div class="player-name">${username} ${data.isAdmin ? '👑' : ''}</div>
+                        <div class="player-stats">
+                            🪙 ${data.coins || 0} Coins | 
+                            📦 ${(data.emojis || []).length} Emoji | 
+                            🕐 ${new Date(data.lastLogin).toLocaleString('ms-MY')}
+                        </div>
+                        ${emojisHtml ? `<div class="emoji-display">${emojisHtml}</div>` : ''}
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge ${data.online ? 'status-online' : 'status-offline'}">
+                            ${data.online ? '🟢 ONLINE' : '⚫ OFFLINE'}
+                        </span>
+                        <button class="view-btn" onclick="viewPlayer('${username}')">👁️ Lihat</button>
+                    </div>
+                `;
+                
+                playersList.appendChild(card);
+            });
+        }
+
+        window.viewPlayer = function(username) {
+            const data = allPlayers[username];
+            document.getElementById('modalPlayerName').textContent = username;
+            
+            const emojisHtml = (data.emojis || []).map(e => `
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="font-size: 3em;">${e.emoji}</span>
+                        <div>
+                            <div style="color: #4169e1; font-weight: bold;">${e.role.toUpperCase()}</div>
+                            <div>❤️ HP: ${e.hp}/${e.maxHp}</div>
+                            <div>⚔️ Damage: ${e.damage}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('modalContent').innerHTML = `
+                <div style="color: #ccc;">
+                    <p><strong style="color: #ffd700;">Status:</strong> ${data.online ? '🟢 ONLINE' : '⚫ OFFLINE'}</p>
+                    <p><strong style="color: #ffd700;">Admin:</strong> ${data.isAdmin ? '✅ YA' : '❌ TIDAK'}</p>
+                    <p><strong style="color: #ffd700;">Coins:</strong> 🪙 ${data.coins || 0}</p>
+                    <p><strong style="color: #ffd700;">Total Klik:</strong> 👆 ${data.clicks || 0}</p>
+                    <p><strong style="color: #ffd700;">Jumlah Emoji:</strong> 📦 ${(data.emojis || []).length}</p>
+                    <p><strong style="color: #ffd700;">Akaun Dicipta:</strong> ${new Date(data.createdAt).toLocaleString('ms-MY')}</p>
+                    <p><strong style="color: #ffd700;">Login Terakhir:</strong> ${new Date(data.lastLogin).toLocaleString('ms-MY')}</p>
+                    
+                    <h4 style="color: #ffd700; margin-top: 20px; margin-bottom: 10px;">📦 Koleksi Emoji:</h4>
+                    ${emojisHtml || '<p>Tiada emoji lagi.</p>'}
+                </div>
+            `;
+            
+            playerModal.classList.add('active');
+        };
+
+        function renderBattles() {
+            const battlesList = document.getElementById('battlesList');
+            battlesList.innerHTML = '';
+
+            const battles = Object.entries(allBattles);
+            const activeBattles = battles.filter(([id, data]) => data.status === 'active');
+
+            if (activeBattles.length === 0) {
+                battlesList.innerHTML = '<p style="text-align: center; color: #ccc; padding: 40px;">Tiada pertempuran aktif pada masa ini.</p>';
+                return;
+            }
+
+            activeBattles.forEach(([id, data]) => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                
+                card.innerHTML = `
+                    <div class="player-info">
+                        <div class="player-name">⚔️ ${data.player1} VS ${data.player2}</div>
+                        <div class="player-stats">
+                            🕐 Bermula: ${new Date(data.startedAt).toLocaleString('ms-MY')}
+                        </div>
+                    </div>
+                    <span class="status-badge status-battle">🔥 BERLAWAN</span>
+                `;
+                
+                battlesList.appendChild(card);
+            });
+        }
+
+        function renderCodes() {
+            const codesList = document.getElementById('codesList');
+            const codesHtml = document.querySelector('#codesList h3');
+            codesList.innerHTML = '';
+            codesList.appendChild(codesHtml);
+
+            const codes = Object.entries(allCodes).sort((a, b) => b[1].createdAt - a[1].createdAt);
+
+            codes.forEach(([code, data]) => {
+                const card = document.createElement('div');
+                card.className = 'code-card';
+                
+                const usedCount = (data.used || []).length;
+                const maxUses = data.maxUses || '∞';
+                
+                card.innerHTML = `
+                    <div class="code-display">🎁 ${code}</div>
+                    <div class="code-info">💰 Hadiah: ${data.reward} Coins</div>
+                    <div class="code-info">👥 Penggunaan: ${usedCount} / ${maxUses}</div>
+                    <div class="code-info">📅 Dicipta: ${new Date(data.createdAt).toLocaleString('ms-MY')}</div>
+                    <div class="code-info">👤 Oleh: ${data.createdBy}</div>
+                `;
+                
+                codesList.appendChild(card);
+            });
+        }
+
+        document.getElementById('createCodeBtn').addEventListener('click', async () => {
+            const codeInput = document.getElementById('codeInput');
+            const rewardInput = document.getElementById('rewardInput');
+            const maxUsesInput = document.getElementById('maxUsesInput');
+            const messageBox = document.getElementById('codeMessage');
+
+            const code = codeInput.value.trim().toUpperCase();
+            const reward = parseInt(rewardInput.value);
+            const maxUses = parseInt(maxUsesInput.value);
+
+            function showMessage(text, type) {
+                messageBox.textContent = text;
+                messageBox.className = `message ${type}`;
+                messageBox.style.display = 'block';
+                setTimeout(() => messageBox.style.display = 'none', 4000);
+            }
+
+            if (!code || code.length < 3) {
+                showMessage('❌ Code mestilah sekurang-kurangnya 3 huruf!', 'error');
+                return;
+            }
+
+            if (!reward || reward < 1) {
+                showMessage('❌ Hadiah mestilah sekurang-kurangnya 1 coin!', 'error');
+                return;
+            }
+
+            if (allCodes[code]) {
+                showMessage('❌ Code ini sudah wujud!', 'error');
+                return;
+            }
+
+            const codeData = {
+                reward: reward,
+                maxUses: maxUses || null,
+                used: [],
+                createdBy: currentUser,
+                createdAt: Date.now()
+            };
+
+            const codeRef = ref(db, 'redeemCodes/' + code);
+            await set(codeRef, codeData);
+
+            showMessage(`✅ Code ${code} berjaya dicipta!`, 'success');
+            codeInput.value = '';
+            rewardInput.value = '';
+            maxUsesInput.value = '0';
+        });
+    </script>
+</body>
+</html>
